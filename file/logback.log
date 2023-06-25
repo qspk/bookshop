@@ -1,0 +1,7 @@
+2023-06-25 09:39:03.279 [main] INFO  BaseCustomerController - aaa(1111)注册成为vip
+2023-06-25 10:56:18.694 [main] INFO  AdminController - 管理员:admin登陆了
+2023-06-25 10:56:32.887 [main] INFO  BookController - 管理员:admin退出书籍管理系统
+2023-06-25 10:56:32.887 [main] INFO  AdminController - 管理员:admin进入了书籍管理系统
+2023-06-25 10:58:13.527 [main] INFO  AdminController - 管理员:admin登陆了
+2023-06-25 10:58:15.584 [main] INFO  AdminController - 管理员:admin进入了书籍管理系统
+2023-06-25 10:59:29.290 [main] INFO  BookController - 管理员:admin添加书籍:b0001
