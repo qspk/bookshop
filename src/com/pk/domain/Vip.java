@@ -27,6 +27,8 @@ public class Vip implements Serializable {
         this.phone = phone;
         this.name = name;
         this.password = password;
+        balance = 0.0;
+        integral = 0;
     }
 
     public Vip(String phone, String name, String password, Double balance) {
@@ -34,6 +36,7 @@ public class Vip implements Serializable {
         this.name = name;
         this.password = password;
         this.balance = balance;
+        integral = 0;
     }
 
     public Vip(String phone, String name, String password, Double balance, Integer integral) {
@@ -65,6 +68,9 @@ public class Vip implements Serializable {
     }
 
     public Double getBalance() {
+        if (balance == null) {
+            return 0.0;
+        }
         return balance;
     }
 
@@ -95,12 +101,11 @@ public class Vip implements Serializable {
 
     @Override
     public String toString() {
-        return "Vip{" +
-                "phone='" + phone + '\'' +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", balance=" + balance +
-                ", integral=" + integral +
-                '}';
+        return
+                "手机号:" + phone + "\n" +
+                        "姓名:" + name + "\n" +
+                        "余额:" + balance + "元\n" +
+                        "积分" + integral
+                ;
     }
 }

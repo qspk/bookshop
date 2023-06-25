@@ -67,13 +67,15 @@ public class VipDapImpl implements VipDao {
 
     @Override
     public void updateVip(Vip vip) {
+        reload();
         for (int i = 0; i < vips.size(); i++) {
-            if (vips.get(i).equals(vip)) {
+            if (vips.get(i).getPhone().equals(vip.getPhone())) {
                 Vip vip0 = vips.get(i);
                 int integerUpdate = vip.getIntegral() - vip0.getIntegral();
                 double balanceUpdate = BigDecimal.valueOf(vip.getBalance()).subtract(BigDecimal.valueOf(vip0.getBalance())).doubleValue();
                 LOGGER.info(vip.getShowName()+"的账号信息发生改变,余额:"+balanceUpdate+"元,积分"+integerUpdate);
                 vips.set(i, vip);
+                reSave();
                 break;
             }
         }

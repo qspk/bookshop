@@ -13,13 +13,16 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class BookDaoImpl implements BookDao {
-    private static  ArrayList<Book> books = new ArrayList<>();
+    private static ArrayList<Book> books = new ArrayList<>();
     public static final Logger LOGGER = LoggerFactory.getLogger("BookDaoImpl");
-     static {
-         reload();
-     }
+
+    static {
+        reload();
+    }
+
     @Override
     public ArrayList<Book> findAllBooks() {
+        reload();
         return books;
     }
 
@@ -62,11 +65,15 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void updateBooks(ArrayList<Book> buyBooks) {
+        reload();
         for (Book buyBook : buyBooks) {
-            for (int i = 0; i < books.size(); i++) {
-                if (buyBook.getBookId().equals(books.get(i).getBookId())) {
-                    LOGGER.info("书码:" + buyBook.getBookId() + "卖出了1本");
-                    books.get(i).setNumber(books.get(i).getNumber() - 1);
+            for (Book book : books) {
+                if (buyBook.getBookId().equals(book.getBookId())) {
+                    LOGGER.info(book.getShowName() + "卖出了1本");
+                    book.numberSubtract();
+//                    int number = book.getNumber() - 1;
+//                    book.setNumber(number);
+                    break;
                 }
             }
         }

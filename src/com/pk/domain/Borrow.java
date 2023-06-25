@@ -1,7 +1,10 @@
 package com.pk.domain;
 
+import com.pk.utils.Format;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Borrow implements Serializable {
@@ -23,7 +26,11 @@ public class Borrow implements Serializable {
     public Vip getVip() {
         return vip;
     }
-
+    public String showInfo() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(Format.DATE_TIME);
+        String ldt = dtf.format(localDateTime);
+        return vip.getShowName() + "\t" + book.getShowName() + "\t" + ldt;
+    }
     public void setVip(Vip vip) {
         this.vip = vip;
     }

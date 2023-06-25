@@ -80,7 +80,7 @@ public class BookController {
                         book.setPrice(price);
                         book.setNumber(number);
                         bookService.updateBook(book);
-                        LOGGER.info("管理员:" + username + "修改书籍:" + bookId);
+                        LOGGER.info("管理员:" + username + "修改书籍:" + book.getShowName());
                         return;
 
                     } else {
@@ -90,6 +90,7 @@ public class BookController {
             }
         }
     }
+
 
     private void deleteBook(String username) {
         if (findAllBooks() != null) {
@@ -105,7 +106,8 @@ public class BookController {
                         if (sc.next().equals("y")) {
                             bookService.deleteBook(bookId);
                             System.out.println("删除成功");
-                            LOGGER.info("管理员:" + username + "删除书籍:" + bookId);
+                            Book book = bookService.getBookById(bookId);
+                            LOGGER.info("管理员:" + username + "删除书籍:" + book.getShowName());
                             return;
                         } else System.out.println("您取消了删除操作");
                     } else {
@@ -119,8 +121,16 @@ public class BookController {
 
     //添加一本书
     private void addBook(String username) {
-        System.out.println("请输入书码:");
-        String bookId = sc.next();
+        String bookId = null;
+        while (true) {
+            System.out.println("请输入书码:");
+            bookId = sc.next();
+            if (bookService.isExist(bookId)) {
+                System.out.println("书名已存在,请重新输入");
+            } else {
+                break;
+            }
+        }
         System.out.println("请输入书名:");
         String bookName = sc.next();
         System.out.println("请输入作者:");
@@ -145,7 +155,7 @@ public class BookController {
         Book book = new Book(bookId, bookName, author, price, number);
 
         bookService.addBook(book);
-        LOGGER.info("管理员:" + username + "添加书籍:" + book.getBookId());
+        LOGGER.info("管理员:" + username + "添加书籍:" + book.getShowName());
         System.out.println("添加成功");
 
     }
@@ -158,11 +168,22 @@ public class BookController {
         } else {
             System.out.println("全部书籍信息如下");
             int i = 1;  //标记当前是第多少本书
+            System.out.println("--------------------------------");
+            System.out.print("序号\t\t书码\t\t");
+            System.out.printf("%15s\t","书名");
+            System.out.println("作者\t\t价格(元)\t余量(本)");
             for (Book book : books) {
-                System.out.println("序号:" + i++);
-                System.out.println(book.toString());
-                System.out.println("--------------------------------");
+                System.out.printf("%3d.\t", i++);
+                System.out.print(book.getBookId() + "\t" );
+                System.out.printf("%15s\t",book.getBookName());
+                System.out.println(book.getAuthor() + "\t" + book.getPrice() + "\t" + book.getNumber());
+                System.out.println();
+//                System.out.println("序号:" + i++);
+//                System.out.println(book.toString());
+//                System.out.println("--------------------------------");
             }
+            System.out.println("--------------------------------");
+
         }
         return books;
     }

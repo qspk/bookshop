@@ -25,6 +25,9 @@ public class Book implements Serializable {
 
     }
 
+    public void numberSubtract() {
+        number--;
+    }
 
     public String getBookId() {
         return bookId;
@@ -65,6 +68,10 @@ public class Book implements Serializable {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public String getShowName() {
+        return bookName + "(" + bookId + ")";
     }
 
     @Override

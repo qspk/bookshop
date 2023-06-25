@@ -6,7 +6,7 @@ import com.pk.service.BookService;
 import com.pk.service.VipService;
 import com.pk.service.impl.BookServiceImpl;
 import com.pk.service.impl.VipServiceImpl;
-import com.pk.utils.Check;
+import com.pk.utils.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,25 +27,27 @@ public class BaseCustomerController {
         System.out.println("欢迎进入小黑书店,您可以进行如下操作");
         System.out.println("如果您是会员,请去会员页面登录,或者可以去注册成为会员");
         System.out.println("本店会员可以享受购书九五折优惠和攒积分兑换好礼,以及借书等服务");
-        System.out.println("# 0.离开 1.注册vip 2.浏览购买书籍");
-        switch (sc.next()) {
-            case "0":
-                System.out.println("谢谢惠顾,欢迎下次再来~~");
-                return;
-            case "1":
-                register();
-                break;
-            case "2":
-                buyBook();
-                break;
-            default:
-                System.out.println("您的选择有误,请重新输入");
+        while (true) {
+            System.out.println("# 0.离开 1.注册vip 2.浏览购买书籍");
+            switch (sc.next()) {
+                case "0":
+                    System.out.println("谢谢惠顾,欢迎下次再来~~");
+                    return;
+                case "1":
+                    register();
+                    break;
+                case "2":
+                    buyBook();
+                    break;
+                default:
+                    System.out.println("您的选择有误,请重新输入");
+            }
         }
     }
 
     //买书
     private void buyBook() {
-        ArrayList<Book> books = new BookController().findAllBooks();
+        ArrayList<Book> books = new ArrayList<>(new BookController().findAllBooks());
         ArrayList<Book> buyBooks = new ArrayList<>();
         System.out.println("您可以根据书码选购书籍");
         while (true) {
@@ -107,7 +109,7 @@ public class BaseCustomerController {
                 return;
             }
 
-            if (phone.matches(Check.PHONE)) {
+            if (phone.matches(Format.PHONE)) {
                 System.out.println("号码格式不对,请重试");
             } else {
                 if (!vipService.isExist(phone)) {

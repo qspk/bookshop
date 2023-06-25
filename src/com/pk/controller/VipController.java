@@ -1,33 +1,39 @@
 package com.pk.controller;
 
 import com.pk.domain.Book;
+import com.pk.domain.Borrow;
 import com.pk.domain.Vip;
 import com.pk.service.BookService;
+import com.pk.service.BorrowService;
 import com.pk.service.VipService;
 import com.pk.service.impl.BookServiceImpl;
+import com.pk.service.impl.BorrowServiceImpl;
 import com.pk.service.impl.VipServiceImpl;
 import com.pk.utils.CheckCode;
+import com.pk.utils.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class VipController {
-    private Vip vip = new Vip();
+    private Vip vip = null;
     public static final Logger LOGGER = LoggerFactory.getLogger("VipController");
     private final Scanner sc = new Scanner(System.in);
     private final VipService vipService = new VipServiceImpl();
     private final BookService bookService = new BookServiceImpl();
+    private final BorrowService borrowService = new BorrowServiceImpl();
 
     public void start() {
-        if (!checkLogin()) {
-            return;
+        if (vip == null) {
+            if (!checkLogin())return;
         }
         System.out.println("尊贵的vip客户,您可以进行下列操作:");
         while (true) {
-            System.out.println("# 0.离开 1.浏览书籍 2.购买书籍 3.余额充值 4.积分查询与兑换 5.借书 6.还书");
+            System.out.println("# 0.离开 1.浏览书籍 2.购买书籍 3.余额充值 4.积分查询与兑换 5.借书 6.还书 7.查看个人信息");
             switch (sc.next()) {
                 case "0":
                     System.out.println("欢迎您的下次光临~~");
@@ -35,13 +41,18 @@ public class VipController {
                     vip = null;
                     return;
                 case "1":
-                    bookService.findAllBooks();
+                    new BookController().findAllBooks();
                     break;
                 case "2":
                     vipBuyBooks();
                     break;
                 case "3":
-//                    chargeBalance();
+                    chargeBalance();
+                    break;
+
+
+                case "7":
+                    checkVipInfo();
                     break;
 
 
@@ -52,8 +63,52 @@ public class VipController {
         }
     }
 
+    //余额充值
+    private void chargeBalance() {
+        System.out.println("当前余额:" + vip.getBalance() + "元");
+        while (true) {
+            System.out.println("请输入您要充值的数额(输入'q'退出)");
+            String s;
+            if (!(s=sc.next()).equals("q")) {
+                if (s.matches(Format.DOUBLE_STRING)) {
+                    double charge = Double.parseDouble(s);
+                    if (charge <= 0) {
+                        System.out.println("请输入一个大于0的值");
+                    } else {
+                        vip.setBalance(BigDecimal.valueOf(vip.getBalance()).add(BigDecimal.valueOf(charge)).doubleValue());
+                        vipService.updateVip(vip);
+                        System.out.println("充值成功,当前余额:" + vip.getBalance() + "元");
+                        vip = vipService.getVip(vip.getPhone());
+                        return;
+                    }
+                } else {
+                    System.out.println("请输入一个数字");
+                }
+
+            }else{
+                System.out.println("您取消了充值");
+                return;
+            }
+
+        }
+
+    }
+
+    //查看个人信息
+    private void checkVipInfo() {
+        System.out.println("----------");
+        System.out.println(vip.toString());
+        if (borrowService.isBorrow(vip)) {
+            ArrayList<Borrow> vipBorrows = borrowService.getVipBorrows(vip);
+            System.out.println("借阅信息:");
+            for (Borrow vipBorrow : vipBorrows) {
+                System.out.println(vipBorrow.showInfo());
+            }
+        }
+    }
+
     private void vipBuyBooks() {
-        ArrayList<Book> books = bookService.findAllBooks();
+        ArrayList<Book> books = new BookController().findAllBooks();
         ArrayList<Book> buyBooks = new ArrayList<>();
         System.out.println("您可以根据书码选购书籍");
         while (true) {
@@ -71,6 +126,7 @@ public class VipController {
                     System.out.println("是否继续选购('y'继续)");
                     if (!sc.next().equals("y")) {
                         vipPay(buyBooks);
+                        return;
                     }
                 }
             } else System.out.println("未找到书籍,请检查书码是否正确");
@@ -104,8 +160,9 @@ public class VipController {
                                 return false;
                             case "1":
                                 String code = CheckCode.getCode(4);
+                                System.out.println("验证码<"+code+">已发送到您的手机");
                                 System.out.println("请输入验证码:");
-                                if (sc.next().equals(code)) {
+                                if (sc.next().equalsIgnoreCase(code)) {
                                     this.vip = vip;
                                     return true;
                                 } else System.out.println("验证码错误");
@@ -130,8 +187,8 @@ public class VipController {
 
 
     public boolean vipPay(ArrayList<Book> buyBooks) {
-        if (!checkLogin()) {
-            return false;
+        if (vip == null) {
+            if (!checkLogin())return false;
         }
 
         System.out.println("您选购了" + buyBooks.size() + "本书");
@@ -142,7 +199,7 @@ public class VipController {
         double payMoney = BigDecimal.valueOf(totalMoney).multiply(BigDecimal.valueOf(0.95)).doubleValue();
         int integer = (int) totalMoney / 10;
         System.out.println("原价一共" + totalMoney + "元,vip享受九五折,您需要支付" + payMoney + "元");
-        System.out.println("共计" + totalMoney + "元,您可以直接支付,或者使用账户余额支付");
+        System.out.println("共计" + payMoney + "元,您可以直接支付,或者使用账户余额支付");
         while (true) {
             System.out.println("# 0.取消支付 1.现金支付 2.余额支付");
             switch (sc.next()) {
