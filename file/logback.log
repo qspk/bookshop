@@ -10,3 +10,10 @@
 2023-06-26 00:55:01.832 [main] INFO  VipController - aaa(1111)登录
 2023-06-26 00:57:14.959 [main] INFO  VipController - aaa(1111)登录
 2023-06-26 00:58:10.092 [main] INFO  VipDapImpl - aaa(1111)的账号信息发生改变,余额:23141.0元,积分0
+2023-06-26 08:42:10.864 [main] INFO  VipController - aaa(1111)登录
+2023-06-26 08:42:38.279 [main] INFO  BookDaoImpl - java入职宝典(b0003)卖出了1本
+2023-06-26 08:42:38.279 [main] INFO  VipDapImpl - aaa(1111)的账号信息发生改变,余额:-1900.0元,积分200
+2023-06-26 08:58:13.401 [main] INFO  VipController - aaa(1111)登录
+2023-06-26 08:59:21.587 [main] INFO  VipController - aaa(1111)兑换了一支铅笔
+2023-06-26 08:59:21.590 [main] INFO  VipDapImpl - aaa(1111)的账号信息发生改变,余额:0.0元,积分-10
+2023-06-26 09:11:31.927 [main] INFO  VipController - aaa(1111)登录

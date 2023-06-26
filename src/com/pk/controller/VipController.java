@@ -11,13 +11,14 @@ import com.pk.service.impl.BorrowServiceImpl;
 import com.pk.service.impl.VipServiceImpl;
 import com.pk.utils.CheckCode;
 import com.pk.utils.Format;
+import com.pk.utils.MapUtils;
+import com.pk.utils.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class VipController {
     private Vip vip = null;
@@ -29,7 +30,7 @@ public class VipController {
 
     public void start() {
         if (vip == null) {
-            if (!checkLogin())return;
+            if (!checkLogin()) return;
         }
         System.out.println("尊贵的vip客户,您可以进行下列操作:");
         while (true) {
@@ -49,8 +50,9 @@ public class VipController {
                 case "3":
                     chargeBalance();
                     break;
-
-
+                case "4":
+                    quireInteger();
+                    break;
                 case "7":
                     checkVipInfo();
                     break;
@@ -63,13 +65,47 @@ public class VipController {
         }
     }
 
+    //积分查询与兑换
+    private void quireInteger() {
+        System.out.println("当前积分:" + vip.getIntegral());
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileReader(Path.PRIZE));
+            Set<String> prizeNames = properties.stringPropertyNames();
+            Map<String, Integer> prizes = new HashMap<>();
+            for (String prizeName : prizeNames) {
+                int integer = Integer.parseInt(properties.getProperty(prizeName));
+                prizes.put(prizeName, integer);
+            }
+            prizes = MapUtils.sortByValue(prizes);
+            System.out.println("当前可兑换物品如下:");
+            prizes.forEach((k, v) -> {
+                System.out.println(k + "===" + v + "积分");
+            });
+            System.out.println("请输您要兑换的物品");
+            String option = sc.next();
+            if (prizes.containsKey(option)) {
+                if (vip.getIntegral() >= prizes.get(option)) {
+                    LOGGER.info(vip.getShowName() + "兑换了" + option);
+                    vip.setIntegral(vip.getIntegral() - prizes.get(option));
+                    System.out.println("兑换成功");
+                    vipService.updateVip(vip);
+                } else {
+                    System.out.println("您的积分不足,可以看看其他奖品哦");
+                }
+            } else System.out.println("您选择的物品还没有哦~~");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //余额充值
     private void chargeBalance() {
         System.out.println("当前余额:" + vip.getBalance() + "元");
         while (true) {
             System.out.println("请输入您要充值的数额(输入'q'退出)");
             String s;
-            if (!(s=sc.next()).equals("q")) {
+            if (!(s = sc.next()).equals("q")) {
                 if (s.matches(Format.DOUBLE_STRING)) {
                     double charge = Double.parseDouble(s);
                     if (charge <= 0) {
@@ -78,6 +114,7 @@ public class VipController {
                         vip.setBalance(BigDecimal.valueOf(vip.getBalance()).add(BigDecimal.valueOf(charge)).doubleValue());
                         vipService.updateVip(vip);
                         System.out.println("充值成功,当前余额:" + vip.getBalance() + "元");
+                        LOGGER.info(vip.getShowName() + "进行了充值");
                         vip = vipService.getVip(vip.getPhone());
                         return;
                     }
@@ -85,7 +122,7 @@ public class VipController {
                     System.out.println("请输入一个数字");
                 }
 
-            }else{
+            } else {
                 System.out.println("您取消了充值");
                 return;
             }
@@ -160,7 +197,7 @@ public class VipController {
                                 return false;
                             case "1":
                                 String code = CheckCode.getCode(4);
-                                System.out.println("验证码<"+code+">已发送到您的手机");
+                                System.out.println("验证码<" + code + ">已发送到您的手机");
                                 System.out.println("请输入验证码:");
                                 if (sc.next().equalsIgnoreCase(code)) {
                                     this.vip = vip;
@@ -188,7 +225,7 @@ public class VipController {
 
     public boolean vipPay(ArrayList<Book> buyBooks) {
         if (vip == null) {
-            if (!checkLogin())return false;
+            if (!checkLogin()) return false;
         }
 
         System.out.println("您选购了" + buyBooks.size() + "本书");
