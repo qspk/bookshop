@@ -62,6 +62,12 @@ public class BorrowDaoImpl implements BorrowDao {
         reSave();
     }
 
+    @Override
+    public ArrayList<Borrow> findAllBorrows() {
+        reload();
+        return borrows;
+    }
+
     //将借阅信息读入集合
     @SuppressWarnings("unchecked")
     private static void reload() {

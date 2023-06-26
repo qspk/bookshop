@@ -5,6 +5,7 @@ import com.pk.domain.Vip;
 
 import java.util.ArrayList;
 
+
 public interface BorrowDao {
     boolean isBorrow(Vip vip);
 
@@ -13,4 +14,6 @@ public interface BorrowDao {
     void addInfo(Borrow borrow);
 
     void deleteInfo(Borrow vipBorrow);
+
+    ArrayList<Borrow> findAllBorrows();
 }

@@ -14,13 +14,13 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class VipDapImpl implements VipDao {
+public class VipDaoImpl implements VipDao {
     //记录vip客户的集合
     public static ArrayList<Vip> vips = new ArrayList<>();
     static {
         reload();
     }
-    public static final Logger LOGGER = LoggerFactory.getLogger("VipDapImpl");
+    public static final Logger LOGGER = LoggerFactory.getLogger("VipDaoImpl");
 
     //将vip信息读入集合
     @SuppressWarnings("unchecked")
@@ -79,5 +79,11 @@ public class VipDapImpl implements VipDao {
                 break;
             }
         }
+    }
+
+    @Override
+    public ArrayList<Vip> findAllVips() {
+        reload();
+        return vips;
     }
 }

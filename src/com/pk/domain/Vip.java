@@ -108,4 +108,12 @@ public class Vip implements Serializable {
                         "积分" + integral
                 ;
     }
+
+    public String showInfo() {
+        return "手机号:" + phone + "\t" +
+                "姓名:" + name + "\t" +
+                "密码:" + password + "\t" +
+                "余额:" + balance + "元\t" +
+                "积分" + integral;
+    }
 }

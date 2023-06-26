@@ -18,4 +18,6 @@ public interface BorrowService {
     void deleteIfo(Borrow vipBorrow);
 
     boolean isBorrowByBookId(Vip vip,String bookId);
+
+    ArrayList<Borrow> findAllBorrows();
 }

@@ -2,6 +2,8 @@ package com.pk.service;
 
 import com.pk.domain.Vip;
 
+import java.util.ArrayList;
+
 public interface VipService {
     boolean isExist(String phone);
 
@@ -10,4 +12,6 @@ public interface VipService {
     Vip getVip(String phone);
 
     void updateVip(Vip vip);
+
+    ArrayList<Vip>  findAllVips();
 }

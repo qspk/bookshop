@@ -48,4 +48,12 @@ public class BorrowServiceImpl implements BorrowService {
         }
     }
 
+    @Override
+    public ArrayList<Borrow> findAllBorrows() {
+        ArrayList<Borrow> borrows = borrowDao.findAllBorrows();
+        if (borrows.isEmpty()) {
+            return null;
+        } else return borrows;
+    }
+
 }

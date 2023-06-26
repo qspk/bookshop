@@ -2,6 +2,8 @@ package com.pk.Dao;
 
 import com.pk.domain.Vip;
 
+import java.util.ArrayList;
+
 public interface VipDao {
     int getIndex(String phone);
 
@@ -10,4 +12,7 @@ public interface VipDao {
     Vip getVip(String phone);
 
     void updateVip(Vip vip);
+
+    ArrayList<Vip> findAllVips();
+
 }

@@ -1,11 +1,16 @@
 package com.pk.controller;
 
+import com.pk.domain.Borrow;
+import com.pk.domain.Vip;
+import com.pk.service.impl.BorrowServiceImpl;
+import com.pk.service.impl.VipServiceImpl;
 import com.pk.utils.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
@@ -15,7 +20,7 @@ import java.util.Set;
  */
 public class AdminController {
     private boolean flag = false;  //标记管理员是否登录
-    private String username = null;
+    private String adminName = null;
     private final Scanner sc = new Scanner(System.in);
     public static final Logger LOGGER = LoggerFactory.getLogger("AdminController");
 
@@ -24,8 +29,8 @@ public class AdminController {
             System.out.println("请先登录您的管理员账号,才可以进行操作");
             if (adminLogin()) {
                 flag = true;
-                LOGGER.info("管理员:" + username + "登陆了");
-                System.out.println("欢迎您,管理员" + username);
+                LOGGER.info("管理员:" + adminName + "登陆了");
+                System.out.println("欢迎您,管理员" + adminName);
             } else {
                 System.out.println("登录失败或您取消登录,即将返回主菜单");
                 return;
@@ -41,22 +46,55 @@ public class AdminController {
                 case "0":
                     System.out.println("即将离开后台管理,返回主界面");
                     flag = false;
-                    LOGGER.info("管理员:" + username + "注销并离开了");
-                    username = null;
+                    LOGGER.info("管理员:" + adminName + "注销并离开了");
+                    adminName = null;
                     return;
                 case "1":
-                    LOGGER.info("管理员:" + username + "进入了书籍管理系统");
-                    new BookController().start(username);
+                    LOGGER.info("管理员:" + adminName + "进入了书籍管理系统");
+                    new BookController().start(adminName);
                     break;
                 case "2":
-                    //todo:查看vip信息
+                    findAllVips();
                     break;
                 case "3":
-                    //todo:查看借阅信息
+                    findAllBorrows();
+                    break;
                 default:
                     System.out.println("您的选择有误,请重新输入");
             }
         }
+    }
+
+    private void findAllBorrows() {
+        LOGGER.info("管理员" + adminName + "正在查看借阅信息");
+        ArrayList<Borrow> borrows = new BorrowServiceImpl().findAllBorrows();
+        if (borrows == null) {
+            System.out.println("当前没有借阅信息");
+        } else {
+            System.out.println("借阅信息如下");
+            int i = 1;
+            for (Borrow borrow : borrows) {
+                System.out.println((i++) + ".\t" + borrow.showInfo());
+            }
+        }
+    }
+
+    private void findAllVips() {
+        LOGGER.info("管理员" + adminName + "正在查看vip客户信息");
+        ArrayList<Vip> vips = new VipServiceImpl().findAllVips();
+        if (vips == null) {
+            System.out.println("当前还没有vip客户");
+        } else {
+            System.out.println("vip信息如下:");
+            int i = 1;
+            for (Vip vip : vips) {
+      /*          System.out.println((i++) + ".\t" + vip.getPhone() + "\t" +
+                        vip.getName() + "\t" + vip.getPassword() + "\t" +
+                        vip.getBalance() + "\t" + vip.getIntegral());*/
+                System.out.println((i++) + ".\t" + vip.showInfo());
+            }
+        }
+        System.out.println("----------------------");
     }
 
     private boolean adminLogin() {
@@ -72,7 +110,7 @@ public class AdminController {
                     System.out.println("请输入密码:");
                     String password = sc.next();
                     if (properties.getProperty(username).equals(password)) {
-                        this.username = username;
+                        this.adminName = username;
                         return true;
                     } else {
                         System.out.println("密码不正确,请检查后重试,您还有" + i + "次机会");
