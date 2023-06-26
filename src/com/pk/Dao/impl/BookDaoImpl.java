@@ -58,6 +58,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void updateBook(Book book) {
+        reload();
         int index = getIndex(book.getBookId());
         books.set(index, book);
         reSave();

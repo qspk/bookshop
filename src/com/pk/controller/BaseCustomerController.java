@@ -109,7 +109,7 @@ public class BaseCustomerController {
                 return;
             }
 
-            if (phone.matches(Format.PHONE)) {
+            if (!phone.matches(Format.PHONE)) {
                 System.out.println("号码格式不对,请重试");
             } else {
                 if (!vipService.isExist(phone)) {

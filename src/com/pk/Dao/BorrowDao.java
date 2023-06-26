@@ -9,4 +9,8 @@ public interface BorrowDao {
     boolean isBorrow(Vip vip);
 
     ArrayList<Borrow> getVipBorrows(Vip vip);
+
+    void addInfo(Borrow borrow);
+
+    void deleteInfo(Borrow vipBorrow);
 }

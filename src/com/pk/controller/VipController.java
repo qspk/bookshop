@@ -9,15 +9,13 @@ import com.pk.service.VipService;
 import com.pk.service.impl.BookServiceImpl;
 import com.pk.service.impl.BorrowServiceImpl;
 import com.pk.service.impl.VipServiceImpl;
-import com.pk.utils.CheckCode;
-import com.pk.utils.Format;
-import com.pk.utils.MapUtils;
-import com.pk.utils.Path;
+import com.pk.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class VipController {
@@ -53,10 +51,15 @@ public class VipController {
                 case "4":
                     quireInteger();
                     break;
+                case "5":
+                    borrowBook();
+                    break;
+                case "6":
+                    returnBook();
+                    break;
                 case "7":
                     checkVipInfo();
                     break;
-
 
                 default:
                     System.out.println("您的选择有误,请重新输入");
@@ -65,8 +68,200 @@ public class VipController {
         }
     }
 
+    //还书
+    private void returnBook() {
+        System.out.println("--还书页面--");
+        System.out.println("您的借阅信息如下:");
+        ArrayList<Borrow> vipBorrows = borrowService.getVipBorrows(vip);
+        if (borrowService.isBorrow(vip)) {
+            for (Borrow vipBorrow : vipBorrows) {
+                System.out.println(vipBorrow.showInfo());
+            }
+        } else {
+            System.out.println("您当前没有借阅图书");
+            System.out.println("即将返回vip操作页");
+            return;
+        }
+
+        while (true) {
+            if (vipBorrows.isEmpty()) {
+                System.out.println("您已经没有借阅读书信息了,即将返回vip操作页");
+                return;
+            }
+            System.out.println("提示:一本书一天0.3元,未满一天按一天算");
+            System.out.println("您可以选择 # 0.离开 1.还一本书 2.书籍遗失");
+            switch (sc.next()) {
+                case "0":
+                    System.out.println("您离开了还书页面");
+                    return;
+                case "1":
+                    returnOneBook(vipBorrows);
+                    break;
+ /*               case "2":
+                    returnAllBooks(vipBorrows);
+                    break;*/
+                case "2":
+                    loseBook(vipBorrows);
+                    break;
+                default:
+                    System.out.println("您的选择有误,请重新选择");
+
+            }
+        }
+
+
+    }
+
+    //书籍丢失
+    private void loseBook(ArrayList<Borrow> vipBorrows) {
+        System.out.println("请输入丢失的图书书码");
+        String bookId = sc.next();
+        for (Borrow vipBorrow : vipBorrows) {
+            if (vipBorrow.getBook().getBookId().equals(bookId)) {
+                System.out.println("您的借阅信息如下");
+                System.out.println(vipBorrow.showInfo());
+
+                double money = vipBorrow.getBook().getPrice();
+                System.out.println("本书原价" + money + "元");
+
+                while (true) {
+                    System.out.println("请选择您的支付方式 #1.现金 2.账号余额");
+                    switch (sc.next()) {
+                        case "1":
+                            System.out.println("您支付了" + money + "元,清除借阅信息");
+                            LOGGER.info(vip.getShowName() + "支付了丢失的图书:" + vipBorrow.getBook().getShowName() + "损失");
+                            borrowService.deleteIfo(vipBorrow);
+                            return;
+                        case "2":
+                            System.out.println("当前账户余额:" + vip.getBalance() + "元");
+                            if (vip.getBalance() >= money) {
+                                double balance = BigDecimal.valueOf(vip.getBalance()).subtract(BigDecimal.valueOf(money)).doubleValue();
+                                System.out.println("余额支付成功,一共支付了" + money + "元,清除借阅信息,余额剩余:" + balance + "元");
+                                vip.setBalance(balance);
+                            } else {
+                                System.out.println("当前余额不足,不足的请用现金支付");
+                                double balance = -(BigDecimal.valueOf(vip.getBalance()).subtract(BigDecimal.valueOf(money)).doubleValue());
+                                System.out.println("一共支付了" + money + "元,余额支付" + vip.getBalance() + "元,现金支付" + balance + "元,清除借阅信息");
+                                vip.setBalance(0.0);
+                            }
+                            LOGGER.info(vip.getShowName() + "支付了丢失的图书:" + vipBorrow.getBook().getShowName() + "损失");
+                            vipService.updateVip(vip);
+                            borrowService.deleteIfo(vipBorrow);
+                            return;
+                        default:
+                            System.out.println("您的选择有误,请重新选择");
+                    }
+                }
+            }
+        }
+        System.out.println("未找到书籍,请检查书码后重试");
+    }
+
+    //归还一本图书
+    private void returnOneBook(ArrayList<Borrow> vipBorrows) {
+        System.out.println("请输入您要归还的图书书码");
+        String bookId = sc.next();
+        for (Borrow vipBorrow : vipBorrows) {
+            if (vipBorrow.getBook().getBookId().equals(bookId)) {
+                System.out.println("您的借阅信息如下");
+                System.out.println(vipBorrow.showInfo());
+                LocalDateTime end = LocalDateTime.now();
+                int dayNum = Days.getDayNum(vipBorrow.getLocalDateTime(), end);
+                double money = BigDecimal.valueOf(dayNum).multiply(BigDecimal.valueOf(0.3)).doubleValue();
+                System.out.println("您一共借阅了" + dayNum + "天,共计" + money + "元");
+
+                while (true) {
+                    System.out.println("请选择您的支付方式 #1.现金 2.账号余额");
+                    switch (sc.next()) {
+                        case "1":
+                            System.out.println("您支付了" + money + "元,还书成功");
+                            LOGGER.info(vip.getShowName() + "归还图书:" + vipBorrow.getBook().getShowName());
+                            vipBorrow.getBook().setNumber(vipBorrow.getBook().getNumber() + 1);
+                            bookService.updateBook(vipBorrow.getBook());
+                            borrowService.deleteIfo(vipBorrow);
+                            return;
+                        case "2":
+                            System.out.println("当前账户余额:" + vip.getBalance() + "元");
+                            if (vip.getBalance() >= money) {
+                                double balance = BigDecimal.valueOf(vip.getBalance()).subtract(BigDecimal.valueOf(money)).doubleValue();
+                                System.out.println("余额支付成功,一共支付了" + money + "元,还书成功,余额剩余:" + balance + "元");
+                                vip.setBalance(balance);
+
+                            } else {
+                                System.out.println("当前余额不足,不足的请用现金支付");
+                                double balance = -(BigDecimal.valueOf(vip.getBalance()).subtract(BigDecimal.valueOf(money)).doubleValue());
+                                System.out.println("一共支付了" + money + "元,余额支付" + vip.getBalance() + "元,现金支付" + balance + "元,还书成功");
+                                vip.setBalance(0.0);
+                            }
+                            LOGGER.info(vip.getShowName() + "归还图书:" + vipBorrow.getBook().getShowName());
+                            vipService.updateVip(vip);
+                            vipBorrow.getBook().setNumber(vipBorrow.getBook().getNumber() + 1);
+                            bookService.updateBook(vipBorrow.getBook());
+                            borrowService.deleteIfo(vipBorrow);
+                            return;
+                        default:
+                            System.out.println("您的选择有误,请重新选择");
+                    }
+                }
+            }
+        }
+        System.out.println("未找到书籍,请检查书码后重试");
+    }
+
+
+    //借书
+    private void borrowBook() {
+        System.out.println("--借阅页面--");
+        System.out.println("提示:借书业务需要您的余额大于等于100元,且同时只能借3本图书,一本书一天0.3元,未满一天按一天算");
+        System.out.println("您当前的借阅信息:");
+        ArrayList<Borrow> vipBorrows = borrowService.getVipBorrows(vip);
+        if (borrowService.isBorrow(vip)) {
+            for (Borrow vipBorrow : vipBorrows) {
+                System.out.println(vipBorrow.showInfo());
+            }
+        } else {
+            System.out.println("您当前没有借阅图书");
+        }
+        if (vipBorrows.size() >= 3) {
+            System.out.println("您已借阅三本图书,请先还书后再进行借阅");
+        } else if (vip.getBalance() < 100) {
+            System.out.println("您当前账户余额为" + vip.getBalance() + "元,不足100元,请充值后再试");
+        } else {
+            ArrayList<Book> books = new BookController().findAllBooks();  //展示全部图书信息
+            System.out.println("您可以根据书码借阅图书(输入'q'退出):");
+            String bookId = sc.next();
+            if (bookId.equals("q")) {
+                System.out.println("您取消了借书操作");
+
+            } else {
+                if (!borrowService.isBorrowByBookId(vip,bookId)) {
+                    if (bookService.isExist(bookId)) {
+                        Book book = bookService.getBookById(bookId);
+                        if (book.getNumber() <= 0) {
+                            System.out.println("抱歉,当前图书没有余量了,我们会尽快添加");
+                        } else {
+                            System.out.println("借阅成功,您借阅的图书信息如下");
+                            System.out.println(book.toString());
+                            book.setNumber(book.getNumber() - 1);
+                            bookService.updateBook(book);
+                            LocalDateTime ldt = LocalDateTime.now();
+                            Borrow borrow = new Borrow(vip, book, ldt);
+                            borrowService.addInfo(borrow);
+                        }
+                    } else {
+                        System.out.println("未查询到图书,请检查书码后重试");
+                    }
+                } else {
+                    System.out.println("您已经借阅过该图书了,您可以选择其他图书");
+                }
+            }
+
+        }
+    }
+
     //积分查询与兑换
     private void quireInteger() {
+        System.out.println("--积分兑换页面--");
         System.out.println("当前积分:" + vip.getIntegral());
         try {
             Properties properties = new Properties();
@@ -101,6 +296,7 @@ public class VipController {
 
     //余额充值
     private void chargeBalance() {
+        System.out.println("--余额充值页面--");
         System.out.println("当前余额:" + vip.getBalance() + "元");
         while (true) {
             System.out.println("请输入您要充值的数额(输入'q'退出)");
@@ -133,7 +329,7 @@ public class VipController {
 
     //查看个人信息
     private void checkVipInfo() {
-        System.out.println("----------");
+        System.out.println("--vip信息--------");
         System.out.println(vip.toString());
         if (borrowService.isBorrow(vip)) {
             ArrayList<Borrow> vipBorrows = borrowService.getVipBorrows(vip);
@@ -145,6 +341,7 @@ public class VipController {
     }
 
     private void vipBuyBooks() {
+        System.out.println("--买书页面--");
         ArrayList<Book> books = new BookController().findAllBooks();
         ArrayList<Book> buyBooks = new ArrayList<>();
         System.out.println("您可以根据书码选购书籍");
@@ -224,6 +421,7 @@ public class VipController {
 
 
     public boolean vipPay(ArrayList<Book> buyBooks) {
+        System.out.println("--会员支付页面--");
         if (vip == null) {
             if (!checkLogin()) return false;
         }

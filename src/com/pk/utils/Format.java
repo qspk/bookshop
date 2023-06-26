@@ -8,7 +8,7 @@ package com.pk.utils;
  * (\.\d+)? 匹配一个可选的小数部分，其中 \. 匹配小数点，\d+ 匹配一个或多个数字
  * $ 匹配字符串的结尾
  * 这个正则表达式可以匹配如下字符串：
- *
+ * <p>
  * 3.14
  * -3.14
  * 0.123
@@ -17,8 +17,12 @@ package com.pk.utils;
  * -123
  */
 public class Format {
-    public static final String PHONE = "1\\d{9}";
+    public static final String PHONE = "1\\d{10}";
+
+    //日期格式
     public static final String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+
+    //判断一个字符串是不是浮点数
     public static final String DOUBLE_STRING = "^-?\\d+(\\.\\d+)?$";
 
 //    Pattern pattern = Pattern.compile("^[-\+]?\d*[.]\d+$");

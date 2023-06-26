@@ -2,10 +2,12 @@ package com.pk.service.impl;
 
 import com.pk.Dao.BorrowDao;
 import com.pk.Dao.impl.BorrowDaoImpl;
+import com.pk.domain.Book;
 import com.pk.domain.Borrow;
 import com.pk.domain.Vip;
 import com.pk.service.BorrowService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class BorrowServiceImpl implements BorrowService {
@@ -19,6 +21,31 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public ArrayList<Borrow> getVipBorrows(Vip vip) {
         return borrowDao.getVipBorrows(vip);
+    }
+
+    @Override
+    public void addInfo(Borrow borrow) {
+        borrowDao.addInfo(borrow);
+    }
+
+    @Override
+    public void deleteIfo(Borrow vipBorrow) {
+        borrowDao.deleteInfo(vipBorrow);
+    }
+
+    @Override
+    public boolean isBorrowByBookId(Vip vip,String bookId) {
+        ArrayList<Borrow> borrows = borrowDao.getVipBorrows(vip);
+        if (borrows.isEmpty()) {
+            return false;
+        } else {
+            for (Borrow borrow : borrows) {
+                if (borrow.getBook().getBookId().equals(bookId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }
