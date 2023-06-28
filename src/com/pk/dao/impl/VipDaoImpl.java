@@ -1,6 +1,6 @@
-package com.pk.Dao.impl;
+package com.pk.dao.impl;
 
-import com.pk.Dao.VipDao;
+import com.pk.dao.VipDao;
 import com.pk.domain.Vip;
 import com.pk.utils.Path;
 import org.slf4j.Logger;
@@ -42,6 +42,7 @@ public class VipDaoImpl implements VipDao {
         }
     }
 
+    //通过手机号获取用户在集合的索引
     @Override
     public int getIndex(String phone) {
         int index = -1;
@@ -53,18 +54,21 @@ public class VipDaoImpl implements VipDao {
         return index;
     }
 
+    //添加一天vip信息
     @Override
     public void addVip(Vip vip) {
         vips.add(vip);
         reSave();
     }
 
+    //通过手机号获取对应vip对象
     @Override
     public Vip getVip(String phone) {
         int index = getIndex(phone);
         return vips.get(index);
     }
 
+    //更新一条用户信息
     @Override
     public void updateVip(Vip vip) {
         reload();
@@ -81,6 +85,7 @@ public class VipDaoImpl implements VipDao {
         }
     }
 
+    //获得全部全部vip信息
     @Override
     public ArrayList<Vip> findAllVips() {
         reload();

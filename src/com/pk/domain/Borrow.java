@@ -10,9 +10,9 @@ import java.util.Objects;
 public class Borrow implements Serializable {
     public static final long serialVersionUID = 3L;
 
-    private Vip vip;
-    private Book book;
-    private LocalDateTime localDateTime;
+    private Vip vip;    //vip客户对象
+    private Book book;  //书籍对象
+    private LocalDateTime localDateTime;    //借阅时间
 
     public Borrow(Vip vip, Book book, LocalDateTime localDateTime) {
         this.vip = vip;

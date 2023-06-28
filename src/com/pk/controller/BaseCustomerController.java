@@ -77,10 +77,13 @@ public class BaseCustomerController {
                                     System.out.println("您取消了支付,还需要什么服务么?");
                                     return;
                                 case "1":
+                                    System.out.println("即将跳转到vip登录界面");
+                                    //判断是否支付成功
                                     if (new VipController().vipPay(buyBooks))  return;
                                     break;
                                 case "2":
-                                    register();
+                                    //判断是否注册成功
+                                    if (!register()) break;
                                     System.out.println("即将跳转到vip登录界面");
                                     if (new VipController().vipPay(buyBooks))  return;
                                     break;
@@ -99,14 +102,14 @@ public class BaseCustomerController {
     }
 
     //注册
-    private void register() {
+    private boolean register() {
         System.out.println("--vip注册页面--");
         while (true) {
             System.out.println("请输入手机号(输入'q'离开注册):");
             String phone = sc.next();
             if (phone.equals("q")) {
-                System.out.println("即将离开注册页面");
-                return;
+                System.out.println("您取消了注册,即将离开注册页面");
+                return false;
             }
 
             if (!phone.matches(Format.PHONE)) {
@@ -125,7 +128,7 @@ public class BaseCustomerController {
                             vipService.addVip(vip);
                             System.out.println("恭喜您成为尊贵的vip用户,正在返回主页,您可以进入vip页面登录账号,享受vip服务");
                             LOGGER.info(vip.getShowName() + "注册成为vip");
-                            return;
+                            return true;
                         } else System.out.println("两次密码不一致请检查后再输入确认密码");
                     }
                 } else {

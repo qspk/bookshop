@@ -20,4 +20,6 @@ public interface BookService {
     int getIndex(String bookId);
 
     void updateBooks(ArrayList<Book> buyBooks);
+
+    ArrayList<Book> findAllBooksByNumber();
 }

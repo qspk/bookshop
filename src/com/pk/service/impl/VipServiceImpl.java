@@ -1,7 +1,7 @@
 package com.pk.service.impl;
 
-import com.pk.Dao.VipDao;
-import com.pk.Dao.impl.VipDaoImpl;
+import com.pk.dao.VipDao;
+import com.pk.dao.impl.VipDaoImpl;
 import com.pk.domain.Vip;
 import com.pk.service.VipService;
 

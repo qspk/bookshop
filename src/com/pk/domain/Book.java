@@ -6,11 +6,11 @@ import java.util.Objects;
 public class Book implements Serializable {
     public static final long serialVersionUID = 2L;
 
-    private String bookId;
-    private String bookName;
-    private String author;
-    private Double price;
-    private Integer number;
+    private String bookId;  //书码
+    private String bookName;    //书名
+    private String author;  //作者
+    private Double price;   //价格
+    private Integer number; //余量
 
     public Book() {
     }

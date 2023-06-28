@@ -1,6 +1,6 @@
-package com.pk.Dao.impl;
+package com.pk.dao.impl;
 
-import com.pk.Dao.BookDao;
+import com.pk.dao.BookDao;
 import com.pk.domain.Book;
 import com.pk.utils.Path;
 import org.slf4j.Logger;
@@ -20,18 +20,21 @@ public class BookDaoImpl implements BookDao {
         reload();
     }
 
+    //获取全部书籍信息
     @Override
     public ArrayList<Book> findAllBooks() {
         reload();
         return books;
     }
 
+    //添加一本书
     @Override
     public void addBook(Book book) {
         books.add(book);
         reSave();
     }
 
+    //通过书码获取其集合索引
     @Override
     public int getIndex(String bookId) {
         int index = -1;
@@ -43,6 +46,7 @@ public class BookDaoImpl implements BookDao {
         return index;
     }
 
+    //通过书码删除书籍
     @Override
     public void deleteBook(String bookId) {
         int index = getIndex(bookId);
@@ -50,12 +54,14 @@ public class BookDaoImpl implements BookDao {
         reSave();
     }
 
+    //通过书码获得对应书籍信息
     @Override
     public Book getBookById(String bookId) {
         int index = getIndex(bookId);
         return books.get(index);
     }
 
+    //通过书籍对象,更改书籍信息
     @Override
     public void updateBook(Book book) {
         reload();
@@ -64,6 +70,7 @@ public class BookDaoImpl implements BookDao {
         reSave();
     }
 
+    //通过卖书集合更改书籍信息-余量
     @Override
     public void updateBooks(ArrayList<Book> buyBooks) {
         reload();

@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Vip implements Serializable {
     private static final long serialVersionUID = 1L;
     private String phone;       //手机号/账户
-    private String name;        //用户名
+    private String name;        //姓名
     private String password;    //密码
     private Double balance;     //余额
     private Integer integral;  //积分

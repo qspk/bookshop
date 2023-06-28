@@ -1,11 +1,12 @@
 package com.pk.service.impl;
 
-import com.pk.Dao.BookDao;
-import com.pk.Dao.impl.BookDaoImpl;
+import com.pk.dao.BookDao;
+import com.pk.dao.impl.BookDaoImpl;
 import com.pk.domain.Book;
 import com.pk.service.BookService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class BookServiceImpl implements BookService {
     private final BookDao bookDao = new BookDaoImpl();
@@ -50,6 +51,19 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateBooks(ArrayList<Book> buyBooks) {
         bookDao.updateBooks(buyBooks);
+    }
+
+    @Override
+    public ArrayList<Book> findAllBooksByNumber() {
+        ArrayList<Book> books = bookDao.findAllBooks();
+     /*   books.sort(new Comparator<Book>() {
+            @Override
+            public int compare(Book o1, Book o2) {
+                return o1.getNumber() - o2.getNumber();
+            }
+        });  */
+        books.sort(Comparator.comparingInt(Book::getNumber));
+        return books.isEmpty() ? null : books;
     }
 
 }

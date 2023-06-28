@@ -65,6 +65,7 @@ public class AdminController {
         }
     }
 
+    //查看全部借阅信息
     private void findAllBorrows() {
         LOGGER.info("管理员" + adminName + "正在查看借阅信息");
         ArrayList<Borrow> borrows = new BorrowServiceImpl().findAllBorrows();
@@ -79,6 +80,7 @@ public class AdminController {
         }
     }
 
+    //查看全部vip信息
     private void findAllVips() {
         LOGGER.info("管理员" + adminName + "正在查看vip客户信息");
         ArrayList<Vip> vips = new VipServiceImpl().findAllVips();
@@ -97,12 +99,15 @@ public class AdminController {
         System.out.println("----------------------");
     }
 
+    //管理员登录
     private boolean adminLogin() {
+        //三次登录机会
         for (int i = 2; i >= 0; i--) {
             System.out.println("请输入您的管理员用户名(输入'q'退出登录):");
             String username = sc.next();
             if (username.equals("q")) return false;
             try {
+                //从属性文件读取管理员账户和密码
                 Properties properties = new Properties();
                 properties.load(new FileReader(Path.ADMIN));
                 Set<String> usernames = properties.stringPropertyNames();

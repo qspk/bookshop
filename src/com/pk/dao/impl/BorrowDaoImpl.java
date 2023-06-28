@@ -1,6 +1,6 @@
-package com.pk.Dao.impl;
+package com.pk.dao.impl;
 
-import com.pk.Dao.BorrowDao;
+import com.pk.dao.BorrowDao;
 import com.pk.domain.Borrow;
 import com.pk.domain.Vip;
 import com.pk.utils.Path;
@@ -21,12 +21,13 @@ public class BorrowDaoImpl implements BorrowDao {
     static {reload();}
 
 
-
+    //判断vip是否借阅书籍
     @Override
     public boolean isBorrow(Vip vip) {
         return !getVipBorrows(vip).isEmpty();
     }
 
+    //通过vip对象获取其借阅信息集合
     @Override
     public ArrayList<Borrow> getVipBorrows(Vip vip) {
         //单个vip客户借书信息集合
@@ -47,6 +48,7 @@ public class BorrowDaoImpl implements BorrowDao {
         LOGGER.info(borrow.getVip().getShowName() + "借阅了一本图书:" + borrow.getBook().getShowName());
     }
 
+    //删除一条借阅信息
     @Override
     public void deleteInfo(Borrow vipBorrow) {
         reload();
@@ -62,6 +64,7 @@ public class BorrowDaoImpl implements BorrowDao {
         reSave();
     }
 
+    //获取全部的借阅信息
     @Override
     public ArrayList<Borrow> findAllBorrows() {
         reload();

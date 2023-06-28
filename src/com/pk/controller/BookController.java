@@ -21,7 +21,7 @@ public class BookController {
         while (true) {
             System.out.println("<------书籍管理系统------>");
             System.out.println("您可以进行如下操作:");
-            System.out.println("# 0.退出 1.查看全部书籍 2.添加书籍 3.修改书籍价格和余量 4.删除书籍 ");
+            System.out.println("# 0.退出 1.查看全部书籍 2.添加书籍 3.修改书籍价格和余量 4.删除书籍 5.按余量升序查看书籍");
             switch (sc.next()) {
                 case "0":
                     System.out.println("即将退出书籍管理系统");
@@ -39,10 +39,43 @@ public class BookController {
                 case "4":
                     deleteBook(username);
                     break;
-
+                case "5":
+                    showAllBooksByNumber();
+                    break;
                 default:
                     System.out.println("您的选择有误,请重新输入");
             }
+        }
+    }
+
+    private void showAllBooksByNumber() {
+        ArrayList<Book> books = bookService.findAllBooksByNumber();
+        printBooks(books);
+    }
+
+    //打印书籍信息
+    private void printBooks(ArrayList<Book> books) {
+        if (books == null) { //判断当前有没有书籍
+            System.out.println("当前没有书籍,快去添加书籍吧");
+        } else {
+            System.out.println("全部书籍信息如下");
+            int i = 1;  //标记当前是第多少本书
+            System.out.println("--------------------------------");
+            System.out.print("序号\t\t书码\t\t");
+            System.out.printf("%15s\t", "书名");
+            System.out.println("作者\t\t价格(元)\t余量(本)");
+            for (Book book : books) {
+                System.out.printf("%3d.\t", i++);
+                System.out.print(book.getBookId() + "\t");
+                System.out.printf("%15s\t", book.getBookName());
+                System.out.println(book.getAuthor() + "\t" + book.getPrice() + "\t" + book.getNumber());
+                System.out.println();
+//                System.out.println("序号:" + i++);
+//                System.out.println(book.toString());
+//                System.out.println("--------------------------------");
+            }
+            System.out.println("--------------------------------");
+
         }
     }
 
@@ -91,7 +124,7 @@ public class BookController {
         }
     }
 
-
+    //删除书籍
     private void deleteBook(String username) {
         if (findAllBooks() != null) {
             while (true) {
@@ -104,10 +137,11 @@ public class BookController {
                     if (bookService.isExist(bookId)) {
                         System.out.println("是否确认删除,输入'y'确认");
                         if (sc.next().equals("y")) {
+                            String bookShowName = bookService.getBookById(bookId).getShowName();
                             bookService.deleteBook(bookId);
                             System.out.println("删除成功");
-                            Book book = bookService.getBookById(bookId);
-                            LOGGER.info("管理员:" + username + "删除书籍:" + book.getShowName());
+//                            Book book = bookService.getBookById(bookId);
+                            LOGGER.info("管理员:" + username + "删除书籍:" + bookShowName);
                             return;
                         } else System.out.println("您取消了删除操作");
                     } else {
@@ -163,28 +197,7 @@ public class BookController {
     //查看全部书籍
     public ArrayList<Book> findAllBooks() {
         ArrayList<Book> books = bookService.findAllBooks();
-        if (books == null) { //判断当前有没有书籍
-            System.out.println("当前没有书籍,快去添加书籍吧");
-        } else {
-            System.out.println("全部书籍信息如下");
-            int i = 1;  //标记当前是第多少本书
-            System.out.println("--------------------------------");
-            System.out.print("序号\t\t书码\t\t");
-            System.out.printf("%15s\t","书名");
-            System.out.println("作者\t\t价格(元)\t余量(本)");
-            for (Book book : books) {
-                System.out.printf("%3d.\t", i++);
-                System.out.print(book.getBookId() + "\t" );
-                System.out.printf("%15s\t",book.getBookName());
-                System.out.println(book.getAuthor() + "\t" + book.getPrice() + "\t" + book.getNumber());
-                System.out.println();
-//                System.out.println("序号:" + i++);
-//                System.out.println(book.toString());
-//                System.out.println("--------------------------------");
-            }
-            System.out.println("--------------------------------");
-
-        }
+        printBooks(books);
         return books;
     }
 

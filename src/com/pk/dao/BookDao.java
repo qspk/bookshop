@@ -1,4 +1,4 @@
-package com.pk.Dao;
+package com.pk.dao;
 
 import com.pk.domain.Book;
 

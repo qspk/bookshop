@@ -284,7 +284,7 @@ public class VipController {
                     LOGGER.info(vip.getShowName() + "兑换了" + option);
                     vip.setIntegral(vip.getIntegral() - prizes.get(option));
                     System.out.println("兑换成功");
-                    vipService.updateVip(vip);
+                    vipService.updateVip(vip);  //更新用户信息
                 } else {
                     System.out.println("您的积分不足,可以看看其他奖品哦");
                 }
@@ -340,6 +340,7 @@ public class VipController {
         }
     }
 
+    //vip购买图书
     private void vipBuyBooks() {
         System.out.println("--买书页面--");
         ArrayList<Book> books = new BookController().findAllBooks();
@@ -367,7 +368,7 @@ public class VipController {
         }
     }
 
-
+    //检查登录
     public boolean checkLogin() {
         System.out.println("您需要先登录vip账号才可以进入");
         if (vipLogin()) {
@@ -380,6 +381,7 @@ public class VipController {
         }
     }
 
+    //vip登录
     private boolean vipLogin() {
         while (true) {
             System.out.println("请输入您的vip账户/手机号(输入'q'退出):");
@@ -419,7 +421,7 @@ public class VipController {
         }
     }
 
-
+    //vip支付方式
     public boolean vipPay(ArrayList<Book> buyBooks) {
         System.out.println("--会员支付页面--");
         if (vip == null) {
