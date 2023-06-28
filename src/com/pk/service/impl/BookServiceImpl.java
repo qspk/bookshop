@@ -43,16 +43,19 @@ public class BookServiceImpl implements BookService {
         bookDao.updateBook(book);
     }
 
+
     @Override
     public int getIndex(String bookId) {
         return bookDao.getIndex(bookId);
     }
 
+    //买书后修改书籍
     @Override
     public void updateBooks(ArrayList<Book> buyBooks) {
         bookDao.updateBooks(buyBooks);
     }
 
+    //按余量升序查找书籍
     @Override
     public ArrayList<Book> findAllBooksByNumber() {
         ArrayList<Book> books = bookDao.findAllBooks();
